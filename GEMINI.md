@@ -8,8 +8,13 @@ It defines API contracts, prompt templates, guardrails, and Laravel integration 
 ## Framework
 - Laravel
 - Filament
-- Vue
+- Vue + inertia
 - use google-gemini-php/laravel for integration
+
+## General Instructions
+- Don't implement without confirmation
+- Ensure use best practices
+- Implement the feature incrementally, focus on the functionality
 
 ## 1) What Gemini does in our app
 | Wireframe Area | Capability | Gemini Role | Notes |
