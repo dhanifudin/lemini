@@ -11,19 +11,57 @@ import {
     SidebarMenuButton,
     SidebarMenuItem,
 } from '@/components/ui/sidebar';
-import { dashboard } from '@/routes';
-import { type NavItem } from '@/types';
-import { Link } from '@inertiajs/vue3';
-import { BookOpen, Folder, LayoutGrid } from 'lucide-vue-next';
+import type { AppPageProps, NavItem } from '@/types';
+import { Link, usePage } from '@inertiajs/vue3';
+import { computed } from 'vue';
+import { BookOpen, Folder, LayoutGrid, MessageSquare, Target, UserRound } from 'lucide-vue-next';
 import AppLogo from './AppLogo.vue';
 
-const mainNavItems: NavItem[] = [
-    {
-        title: 'Dashboard',
-        href: dashboard(),
-        icon: LayoutGrid,
-    },
-];
+const page = usePage<AppPageProps>();
+
+const role = computed(() => page.props.auth.user?.role ?? 'student');
+
+const mainNavItems = computed<NavItem[]>(() => {
+    if (role.value === 'teacher') {
+        return [
+            {
+                title: 'Teacher Dashboard',
+                href: '/teacher/dashboard',
+                icon: LayoutGrid,
+            },
+            {
+                title: 'Feedback Queue',
+                href: '/teacher/dashboard#queue',
+                icon: MessageSquare,
+            },
+        ];
+    }
+
+    return [
+        {
+            title: 'Dashboard',
+            href: '/dashboard',
+            icon: LayoutGrid,
+        },
+        {
+            title: 'Feedback',
+            href: '/feedback',
+            icon: MessageSquare,
+        },
+        {
+            title: 'Practice',
+            href: '/practice',
+            icon: Target,
+        },
+        {
+            title: 'Profile',
+            href: '/profile',
+            icon: UserRound,
+        },
+    ];
+});
+
+const homeHref = computed(() => (role.value === 'teacher' ? '/teacher/dashboard' : '/dashboard'));
 
 const footerNavItems: NavItem[] = [
     {
@@ -45,7 +83,7 @@ const footerNavItems: NavItem[] = [
             <SidebarMenu>
                 <SidebarMenuItem>
                     <SidebarMenuButton size="lg" as-child>
-                        <Link :href="dashboard()">
+                        <Link :href="homeHref">
                             <AppLogo />
                         </Link>
                     </SidebarMenuButton>

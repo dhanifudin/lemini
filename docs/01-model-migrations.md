@@ -252,3 +252,48 @@ return new class extends Migration
     }
 };
 ```
+
+### 7. Add Role to Users
+
+We need to add a `role` column to the `users` table to distinguish between different types of users.
+
+First, create a new migration to modify the `users` table:
+
+```bash
+php artisan make:migration add_role_to_users_table --table=users
+```
+
+Then, update the generated migration file with the following code:
+
+File: `database/migrations/YYYY_MM_DD_HHMMSS_add_role_to_users_table.php`
+
+```php
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    /**
+     * Run the migrations.
+     */
+    public function up(): void
+    {
+        Schema::table('users', function (Blueprint $table) {
+            $table->enum('role', ['student', 'admin', 'teacher'])->default('student');
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     */
+    public function down(): void
+    {
+        Schema::table('users', function (Blueprint $table) {
+            $table->dropColumn('role');
+        });
+    }
+};
+```
