@@ -189,7 +189,14 @@ jobs:
       - name: Add known hosts
         run: |
           mkdir -p ~/.ssh
-          echo "${{ secrets.VPS_SSH_KNOWN_HOSTS }}" >> ~/.ssh/known_hosts
+          if [ -n "${{ secrets.VPS_SSH_KNOWN_HOSTS }}" ]; then
+            echo "${{ secrets.VPS_SSH_KNOWN_HOSTS }}" >> ~/.ssh/known_hosts
+          elif [ -n "${{ secrets.VPS_HOST }}" ]; then
+            ssh-keyscan -H "${{ secrets.VPS_HOST }}" >> ~/.ssh/known_hosts
+          else
+            echo "No host provided for known_hosts population." >&2
+            exit 1
+          fi
 
       - name: Deploy with Deployer
         env:
@@ -213,7 +220,7 @@ Adjustments to consider:
 
 - `VPS_HOST`, `VPS_USER`, `VPS_DEPLOY_PATH`
 - `VPS_SSH_KEY` (private key)
-- `VPS_SSH_KNOWN_HOSTS` (`ssh-keyscan -H <host>`)
+- `VPS_SSH_KNOWN_HOSTS` (`ssh-keyscan -H <host>`) — optional if allowing the workflow to fetch via `ssh-keyscan`
 - Application secrets needed for runtime (database credentials, queue, third-party keys) stored as environment variables or managed via `.env` on the server.
 
 ---

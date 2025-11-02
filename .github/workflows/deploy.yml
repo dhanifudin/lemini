@@ -71,7 +71,14 @@ jobs:
       - name: Add known hosts
         run: |
           mkdir -p ~/.ssh
-          echo "${{ secrets.VPS_SSH_KNOWN_HOSTS }}" >> ~/.ssh/known_hosts
+          if [ -n "${{ secrets.VPS_SSH_KNOWN_HOSTS }}" ]; then
+            echo "${{ secrets.VPS_SSH_KNOWN_HOSTS }}" >> ~/.ssh/known_hosts
+          elif [ -n "${{ secrets.VPS_HOST }}" ]; then
+            ssh-keyscan -H "${{ secrets.VPS_HOST }}" >> ~/.ssh/known_hosts
+          else
+            echo "No host provided for known_hosts population." >&2
+            exit 1
+          fi
 
       - name: Deploy with Deployer
         env:

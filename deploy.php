@@ -11,7 +11,7 @@ set('git_tty', true);
 set('keep_releases', 5);
 set('allow_anonymous_stats', false);
 set('writable_mode', 'chmod');
-set('php_fpm_service', 'php8.2-fpm');
+set('php_fpm_service', 'php8.4-fpm');
 set('deploy_artifact', getenv('DEPLOY_ARTIFACT') ?: __DIR__ . '/release.tar.gz');
 
 host('production')
