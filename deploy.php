@@ -11,7 +11,7 @@ set('git_tty', true);
 set('keep_releases', 5);
 set('allow_anonymous_stats', false);
 set('writable_mode', 'chmod');
-set('php_fpm_service', 'php8.2-fpm');
+set('php_fpm_service', 'php8.4-fpm');
 set('ssh_multiplexing', false);
 set('deploy_artifact', static function () {
     $candidates = [];
@@ -52,10 +52,6 @@ task('deploy:update_code', static function () {
 
     upload($artifact, '{{release_path}}/release.tar.gz');
     run('cd {{release_path}} && tar -xzf release.tar.gz && rm release.tar.gz');
-});
-
-task('deploy:vendors', static function () {
-    // Composer dependencies are packaged in the artifact.
 });
 
 desc('Reload PHP-FPM');
