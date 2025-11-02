@@ -11,14 +11,18 @@ set('git_tty', true);
 set('keep_releases', 5);
 set('allow_anonymous_stats', false);
 set('writable_mode', 'chmod');
-set('php_fpm_service', 'php8.4-fpm');
+set('php_fpm_service', 'php8.2-fpm');
 set('deploy_artifact', getenv('DEPLOY_ARTIFACT') ?: __DIR__ . '/release.tar.gz');
+set('ssh_multiplexing', false);
 
 host('production')
     ->setHostname(getenv('DEPLOY_HOST') ?: '0.0.0.0')
     ->setRemoteUser(getenv('DEPLOY_USER') ?: 'deploy')
     ->setDeployPath(getenv('DEPLOY_PATH') ?: '/var/www/lemini')
-    ->set('branch', getenv('DEPLOY_BRANCH') ?: 'main');
+    ->set('branch', getenv('DEPLOY_BRANCH') ?: 'main')
+    ->set('ssh_options', [
+        'StrictHostKeyChecking=accept-new',
+    ]);
 
 task('deploy:update_code', function () {
     $artifact = get('deploy_artifact');

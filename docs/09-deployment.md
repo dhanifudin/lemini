@@ -71,12 +71,16 @@ set('allow_anonymous_stats', false);
 set('writable_mode', 'chmod');
 set('php_fpm_service', 'php8.2-fpm'); // customize for the VPS service name
 set('deploy_artifact', getenv('DEPLOY_ARTIFACT') ?: __DIR__ . '/release.tar.gz');
+set('ssh_multiplexing', false);
 
 host('production')
     ->setHostname(getenv('DEPLOY_HOST') ?: '0.0.0.0')
     ->setRemoteUser(getenv('DEPLOY_USER') ?: 'deploy')
     ->setDeployPath(getenv('DEPLOY_PATH') ?: '/var/www/lemini')
-    ->set('branch', getenv('DEPLOY_BRANCH') ?: 'main');
+    ->set('branch', getenv('DEPLOY_BRANCH') ?: 'main')
+    ->set('ssh_options', [
+        'StrictHostKeyChecking=accept-new',
+    ]);
 
 task('deploy:update_code', function () {
     $artifact = get('deploy_artifact');
@@ -106,6 +110,7 @@ Key notes:
 
 - Update repository URL to match the Git remote (HTTPS or SSH).
 - Ensure your CI step packages the `vendor/` directory and built assets before invoking Deployer (the artifact is uploaded during `deploy:update_code`).
+- `StrictHostKeyChecking=accept-new` lets the workflow trust the VPS fingerprint on first contact; replace with stricter verification if you manage known hosts ahead of time.
 - Use `dotenv()` helper or `set()` calls if you prefer storing host info directly in the file rather than environment variables.
 - Commit `deploy.php` and ensure `composer.json` includes Deployer: `composer require --dev deployer/deployer:^7.0`.
 
