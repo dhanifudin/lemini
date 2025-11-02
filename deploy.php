@@ -14,11 +14,9 @@ add('writable_dirs', []);
 
 // Hosts
 
-host('production')
-    ->set('hostname', getenv('VPS_HOST'))
+host(getenv('VPS_HOST'))
     ->set('remote_user', getenv('VPS_USER') ?: 'deployer')
-    ->set('deploy_path', getenv('VPS_DEPLOY_PATH') ?: '/var/www/lemini')
-    ->set('branch', getenv('DEPLOY_BRANCH') ?: 'main');
+    ->set('deploy_path', getenv('VPS_DEPLOY_PATH') ?: '/var/www/lemini');
 
 task('deploy:update_code', function () {
     $artifact = get('deploy_artifact');
