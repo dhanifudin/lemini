@@ -1,28 +1,24 @@
 <?php
-
-declare(strict_types=1);
-
 namespace Deployer;
 
 require 'recipe/laravel.php';
 
+// Config
+
 set('repository', 'https://github.com/dhanifudin/lemini.git');
-set('git_tty', true);
-set('keep_releases', 5);
-set('allow_anonymous_stats', false);
-set('writable_mode', 'chmod');
 set('php_fpm_service', 'php8.4-fpm');
-set('deploy_artifact', getenv('DEPLOY_ARTIFACT') ?: __DIR__ . '/release.tar.gz');
-set('ssh_multiplexing', false);
+
+add('shared_files', []);
+add('shared_dirs', []);
+add('writable_dirs', []);
+
+// Hosts
 
 host('production')
-    ->setHostname(getenv('DEPLOY_HOST') ?: '0.0.0.0')
-    ->setRemoteUser(getenv('DEPLOY_USER') ?: 'deploy')
-    ->setDeployPath(getenv('DEPLOY_PATH') ?: '/var/www/lemini')
-    ->set('branch', getenv('DEPLOY_BRANCH') ?: 'main')
-    ->set('ssh_options', [
-        'StrictHostKeyChecking=accept-new',
-    ]);
+    ->set('hostname', getenv('VPS_HOST'))
+    ->set('remote_user', getenv('VPS_USER') ?: 'deployer')
+    ->set('deploy_path', getenv('VPS_DEPLOY_PATH') ?: '/var/www/lemini')
+    ->set('branch', getenv('DEPLOY_BRANCH') ?: 'main');
 
 task('deploy:update_code', function () {
     $artifact = get('deploy_artifact');
@@ -33,10 +29,6 @@ task('deploy:update_code', function () {
 
     upload($artifact, '{{release_path}}/release.tar.gz');
     run('cd {{release_path}} && tar -xzf release.tar.gz && rm release.tar.gz');
-});
-
-task('deploy:vendors', function () {
-    // Composer dependencies are packaged in the artifact.
 });
 
 desc('Reload PHP-FPM');
