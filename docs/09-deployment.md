@@ -19,7 +19,7 @@ This document describes how to configure automated deployments for the project u
 
 1. **Repository**
    - Ensure `.env.example` contains production-ready defaults for missing env vars.
-   - Add a `deployer.php` file in the project root (covered below).
+   - Add a `deploy.php` file in the project root (covered below).
 2. **VPS**
    - Provision a deploy user with sudo for service restarts.
    - Install system packages: `php8.2-cli`, `php8.2-fpm`, required PHP extensions (`mbstring`, `intl`, `pcntl`, `pdo_mysql`, `curl`, `zip`), `composer`, `git`, `node`, `npm`, and a process supervisor such as `systemd` units or `supervisor` if queues or SSR servers run on the host.
@@ -54,7 +54,7 @@ This document describes how to configure automated deployments for the project u
 
 ## 2. Configure Deployer
 
-Create `deployer.php` in the project root:
+Create `deploy.php` in the project root:
 
 ```php
 <?php
@@ -107,7 +107,7 @@ Key notes:
 - Update repository URL to match the Git remote (HTTPS or SSH).
 - Ensure your CI step packages the `vendor/` directory and built assets before invoking Deployer (the artifact is uploaded during `deploy:update_code`).
 - Use `dotenv()` helper or `set()` calls if you prefer storing host info directly in the file rather than environment variables.
-- Commit `deployer.php` and ensure `composer.json` includes Deployer: `composer require --dev deployer/deployer:^7.0`.
+- Commit `deploy.php` and ensure `composer.json` includes Deployer: `composer require --dev deployer/deployer:^7.0`.
 
 ---
 
@@ -204,7 +204,7 @@ jobs:
 
 Adjustments to consider:
 
-- If assets should be built on the VPS instead, skip the archive step and revert `deployer.php` to run `npm` / Composer tasks remotely.
+- If assets should be built on the VPS instead, skip the archive step and revert `deploy.php` to run `npm` / Composer tasks remotely.
 - Use GitHub Environments to scope secrets (`production`, `staging`).
 - Add test steps (e.g., `composer test`) before deployment gate.
 - Configure Slack/Teams notifications after successful deployments if needed.
@@ -257,7 +257,7 @@ Adjustments to consider:
 
 ## Next Steps Checklist
 
-- [ ] Create `deployer.php` and commit to repository.
+- [ ] Create `deploy.php` and commit to repository.
 - [ ] Add Deployer as a dev dependency via Composer.
 - [ ] Set GitHub Actions workflow file as described.
 - [ ] Provision and secure the VPS environment.
