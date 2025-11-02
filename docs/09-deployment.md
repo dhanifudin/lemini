@@ -70,7 +70,28 @@ set('keep_releases', 5);
 set('allow_anonymous_stats', false);
 set('writable_mode', 'chmod');
 set('php_fpm_service', 'php8.2-fpm'); // customize for the VPS service name
-set('deploy_artifact', getenv('DEPLOY_ARTIFACT') ?: __DIR__ . '/release.tar.gz');
+set('deploy_artifact', static function () {
+    $candidates = [];
+
+    $envPath = getenv('DEPLOY_ARTIFACT');
+    if (is_string($envPath) && $envPath !== '') {
+        $candidates[] = $envPath;
+    }
+
+    $candidates[] = getcwd() . '/release.tar.gz';
+    $candidates[] = __DIR__ . '/release.tar.gz';
+
+    foreach ($candidates as $path) {
+        if ($path && file_exists($path)) {
+            return realpath($path) ?: $path;
+        }
+    }
+
+    throw new \RuntimeException(sprintf(
+        'Deployment artifact not found. Checked paths: %s',
+        implode(', ', array_filter($candidates))
+    ));
+});
 set('ssh_multiplexing', false);
 
 host('production')
@@ -82,23 +103,21 @@ host('production')
         'StrictHostKeyChecking=accept-new',
     ]);
 
-task('deploy:update_code', function () {
+task('deploy:update_code', static function () {
     $artifact = get('deploy_artifact');
 
-    if (!file_exists($artifact)) {
-        throw new \RuntimeException(sprintf('Deployment artifact not found at %s', $artifact));
-    }
+    info(sprintf('Uploading artifact from %s', $artifact));
 
     upload($artifact, '{{release_path}}/release.tar.gz');
     run('cd {{release_path}} && tar -xzf release.tar.gz && rm release.tar.gz');
 });
 
-task('deploy:vendors', function () {
+task('deploy:vendors', static function () {
     // Composer dependencies are packaged in the artifact.
 });
 
 desc('Reload PHP-FPM');
-task('php-fpm:reload', function () {
+task('php-fpm:reload', static function () {
     run('sudo systemctl reload ' . get('php_fpm_service'));
 });
 

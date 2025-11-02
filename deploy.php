@@ -1,36 +1,65 @@
 <?php
+
+declare(strict_types=1);
+
 namespace Deployer;
 
 require 'recipe/laravel.php';
 
-// Config
-
 set('repository', 'https://github.com/dhanifudin/lemini.git');
-set('php_fpm_service', 'php8.4-fpm');
+set('git_tty', true);
+set('keep_releases', 5);
+set('allow_anonymous_stats', false);
+set('writable_mode', 'chmod');
+set('php_fpm_service', 'php8.2-fpm');
+set('ssh_multiplexing', false);
+set('deploy_artifact', static function () {
+    $candidates = [];
 
-add('shared_files', []);
-add('shared_dirs', []);
-add('writable_dirs', []);
+    $envPath = getenv('DEPLOY_ARTIFACT');
+    if (is_string($envPath) && $envPath !== '') {
+        $candidates[] = $envPath;
+    }
 
-// Hosts
+    $candidates[] = getcwd() . '/release.tar.gz';
+    $candidates[] = __DIR__ . '/release.tar.gz';
 
-host('194.127.193.198')
-    ->set('remote_user', 'el')
-    ->set('deploy_path', '/var/www/learning.dhanifudin.com');
+    foreach ($candidates as $path) {
+        if ($path && file_exists($path)) {
+            return realpath($path) ?: $path;
+        }
+    }
 
-task('deploy:update_code', function () {
+    throw new \RuntimeException(sprintf(
+        'Deployment artifact not found. Checked paths: %s',
+        implode(', ', array_filter($candidates))
+    ));
+});
+
+host('production')
+    ->setHostname(getenv('DEPLOY_HOST') ?: '194.127.193.198')
+    ->setRemoteUser(getenv('DEPLOY_USER') ?: 'el')
+    ->setDeployPath(getenv('DEPLOY_PATH') ?: '/var/www/learning.dhanifudin.com')
+    ->set('branch', getenv('DEPLOY_BRANCH') ?: 'main')
+    ->set('ssh_options', [
+        'StrictHostKeyChecking=accept-new',
+    ]);
+
+task('deploy:update_code', static function () {
     $artifact = get('deploy_artifact');
 
-    if (!file_exists($artifact)) {
-        throw new \RuntimeException(sprintf('Deployment artifact not found at %s', $artifact));
-    }
+    info(sprintf('Uploading artifact from %s', $artifact));
 
     upload($artifact, '{{release_path}}/release.tar.gz');
     run('cd {{release_path}} && tar -xzf release.tar.gz && rm release.tar.gz');
 });
 
+task('deploy:vendors', static function () {
+    // Composer dependencies are packaged in the artifact.
+});
+
 desc('Reload PHP-FPM');
-task('php-fpm:reload', function () {
+task('php-fpm:reload', static function () {
     run('sudo systemctl reload ' . get('php_fpm_service'));
 });
 
