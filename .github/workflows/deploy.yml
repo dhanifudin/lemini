@@ -50,15 +50,15 @@ jobs:
         run: npm run build
 
       - name: Create deployment archive
-        run: >
-          tar
-          --exclude='.git'
-          --exclude='.github'
-          --exclude='node_modules'
-          --exclude='tests'
-          --exclude='release.tar.gz'
-          -czf release.tar.gz
-          .
+        run: |
+          tar \
+            --exclude='.git' \
+            --exclude='.github' \
+            --exclude='node_modules' \
+            --exclude='tests' \
+            -czf /tmp/release.tar.gz \
+            .
+          mv /tmp/release.tar.gz release.tar.gz
 
       - name: Install Deployer
         run: composer global require deployer/deployer:^7.0
