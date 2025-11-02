@@ -14,7 +14,7 @@ add('writable_dirs', []);
 
 // Hosts
 
-host(getenv('VPS_HOST'))
+host('194.127.193.198')
     ->set('remote_user', getenv('VPS_USER') ?: 'deployer')
     ->set('deploy_path', getenv('VPS_DEPLOY_PATH') ?: '/var/www/lemini');
 
