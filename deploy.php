@@ -15,8 +15,8 @@ add('writable_dirs', []);
 // Hosts
 
 host('194.127.193.198')
-    ->set('remote_user', getenv('VPS_USER') ?: 'deployer')
-    ->set('deploy_path', getenv('VPS_DEPLOY_PATH') ?: '/var/www/lemini');
+    ->set('remote_user', 'el')
+    ->set('deploy_path', '/var/www/learning.dhanifudin.com');
 
 task('deploy:update_code', function () {
     $artifact = get('deploy_artifact');
