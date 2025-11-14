@@ -8,22 +8,13 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('items', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('rubric_id')->nullable()->constrained()->onDelete('set null');
-            $table->string('objective_code');
-            $table->text('stem');
-            $table->string('type');
-            $table->json('options')->nullable();
-            $table->text('answer');
-            $table->text('rationale')->nullable();
-            $table->json('meta')->nullable();
-            $table->timestamps();
-        });
+        // Duplicate CREATE of items table. Earlier migration already applied.
+        return; // no-op
     }
 
     public function down(): void
     {
-        Schema::dropIfExists('items');
+        // No-op so as not to drop table via duplicate.
+        return; // no-op
     }
 };

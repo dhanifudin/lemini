@@ -8,20 +8,13 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('attempts', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('user_id')->constrained()->cascadeOnDelete();
-            $table->foreignId('item_id')->constrained()->cascadeOnDelete();
-            $table->text('response');
-            $table->float('score')->nullable();
-            $table->json('metadata')->nullable();
-            $table->timestamps();
-            $table->index(['user_id','item_id']);
-        });
+        // Third duplicate of attempts table create. Neutralized to prevent conflicts.
+        return; // no-op
     }
 
     public function down(): void
     {
-        Schema::dropIfExists('attempts');
+        // No-op: avoid dropping via duplicate migration.
+        return; // no-op
     }
 };

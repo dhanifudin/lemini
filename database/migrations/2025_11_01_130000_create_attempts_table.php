@@ -11,33 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        // Ensure the referenced tables exist before creating attempts.
-        if (!Schema::hasTable('items')) {
-            throw new RuntimeException('Cannot create attempts table: items table does not exist yet.');
-        }
-        if (!Schema::hasTable('users')) {
-            throw new RuntimeException('Cannot create attempts table: users table does not exist yet.');
-        }
-
-        Schema::create('attempts', function (Blueprint $table) {
-            $table->id();
-            // Explicit foreign key declarations for clarity
-            $table->foreignId('user_id')
-                ->constrained('users')
-                ->cascadeOnDelete();
-
-            $table->foreignId('item_id')
-                ->constrained('items')
-                ->cascadeOnDelete();
-
-            $table->text('response');
-            $table->float('score')->nullable();
-            $table->json('metadata')->nullable();
-            $table->timestamps();
-
-            // Optional composite index to speed up queries by user & item
-            $table->index(['user_id', 'item_id']);
-        });
+        // Redundant duplicate of attempts table creation kept for historical reference.
+        // Intentionally left no-op to avoid re-creating an existing table.
+        // Use later ALTER migrations for schema changes instead of duplicate CREATE.
+        return; // no-op
     }
 
     /**
@@ -45,6 +22,7 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('attempts');
+        // No-op: original create migration handles dropping. This duplicate should not reverse anything.
+        return; // no-op
     }
 };

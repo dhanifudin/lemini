@@ -8,16 +8,14 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('rubrics', function (Blueprint $table) {
-            $table->id();
-            $table->string('name');
-            $table->text('description')->nullable();
-            $table->timestamps();
-        });
+        // Duplicate CREATE of rubrics table. Original earlier migration already defines schema.
+        // Converted to no-op to preserve migration history without causing conflicts.
+        return; // no-op
     }
 
     public function down(): void
     {
-        Schema::dropIfExists('rubrics');
+        // No-op: do not drop table from duplicate migration.
+        return; // no-op
     }
 };
