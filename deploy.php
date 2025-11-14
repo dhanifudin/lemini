@@ -170,23 +170,8 @@ task('deploy:health_check', static function () {
     }
 });
 
-desc('Backup current release before deployment');
-task('deploy:backup', static function () {
-    $deployPath = get('deploy_path');
-    $timestamp = date('Y-m-d_H-i-s');
-    $backupPath = "$deployPath/backup_$timestamp";
-    
-    if (test("[ -L $deployPath/current ]")) {
-        run("cp -al $deployPath/current $backupPath");
-        info("Backup created at: $backupPath");
-    } else {
-        info('No current release to backup');
-    }
-});
-
 // Deployment hooks
 after('deploy:failed', 'deploy:unlock');
-before('deploy:prepare', 'deploy:backup');
 after('deploy:writable', 'deploy:set_permissions');
 after('deploy:shared', 'deploy:optimize');
 after('deploy:symlink', 'php-fpm:reload');
