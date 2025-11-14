@@ -19,15 +19,22 @@ use App\Http\Controllers\Teacher\Api\QuizExportController;
 use App\Http\Controllers\Teacher\Api\QuizSessionController as TeacherQuizSessionController;
 use App\Http\Controllers\Teacher\Api\ReminderController;
 use App\Http\Controllers\Teacher\DashboardController as TeacherDashboardController;
+use App\Http\Controllers\Landing\LandingPageController;
+use App\Http\Controllers\Landing\LearningStyleController;
+use App\Http\Controllers\Landing\BehaviorTrackingController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use Laravel\Fortify\Features;
 
-Route::get('/', function () {
-    return Inertia::render('Welcome', [
-        'canRegister' => Features::enabled(Features::registration()),
-    ]);
-})->name('home');
+// Landing page routes
+Route::get('/', [LandingPageController::class, 'index'])->name('home');
+
+Route::prefix('api/landing')->group(function () {
+    Route::post('learning-style/save', [LearningStyleController::class, 'save'])->name('landing.learning-style.save');
+    Route::get('learning-style', [LearningStyleController::class, 'get'])->name('landing.learning-style.get');
+    Route::post('track-behavior', [BehaviorTrackingController::class, 'track'])->name('landing.behavior.track');
+    Route::get('analyze-behavior', [BehaviorTrackingController::class, 'analyze'])->name('landing.behavior.analyze');
+});
 
 Route::middleware(['auth', 'verified', 'role:student'])->group(function () {
     Route::get('dashboard', DashboardController::class)->name('dashboard');
