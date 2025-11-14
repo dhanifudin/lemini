@@ -12,10 +12,6 @@ set('keep_releases', 5);
 set('allow_anonymous_stats', false);
 
 // File permissions and ownership
-set('writable_mode', 'chmod');
-set('writable_chmod_mode', '0775');
-set('writable_use_sudo', true);
-set('http_user', 'www');
 set('php_fpm_service', 'php8.4-fpm');
 set('ssh_multiplexing', false);
 set('deploy_artifact', static function () {
@@ -59,48 +55,6 @@ task('deploy:update_code', static function () {
     run('cd {{release_path}} && tar -xzf release.tar.gz && rm release.tar.gz');
     
     info('Artifact extracted successfully');
-});
-
-desc('Clear and optimize caches');
-task('deploy:optimize', static function () {
-    run('cd {{release_path}} && php artisan config:cache');
-    run('cd {{release_path}} && php artisan route:cache');
-    run('cd {{release_path}} && php artisan view:cache');
-    run('cd {{release_path}} && php artisan event:cache');
-    
-    info('Application caches optimized');
-});
-
-desc('Set proper ownership and permissions');
-task('deploy:set_permissions', static function () {
-    $httpUser = get('http_user');
-    $deployPath = get('deploy_path');
-    $releasePath = get('release_path');
-    $sharedPath = get('shared_path');
-    
-    // Set ownership for the release directory
-    run("sudo chown -R {{remote_user}}:$httpUser $releasePath");
-    
-    // Set ownership for shared directory
-    run("sudo chown -R {{remote_user}}:$httpUser $sharedPath");
-    
-    // Set proper permissions for directories
-    run("find $releasePath -type d -exec chmod 755 {} \\;");
-    run("find $releasePath -type f -exec chmod 644 {} \\;");
-    
-    // Make storage and bootstrap/cache writable by web server
-    run("sudo chown -R {{remote_user}}:$httpUser $releasePath/storage");
-    run("sudo chown -R {{remote_user}}:$httpUser $releasePath/bootstrap/cache");
-    run("sudo chmod -R 775 $releasePath/storage");
-    run("sudo chmod -R 775 $releasePath/bootstrap/cache");
-    
-    // Set ownership for shared storage if exists
-    if (test("[ -d $sharedPath/storage ]")) {
-        run("sudo chown -R {{remote_user}}:$httpUser $sharedPath/storage");
-        run("sudo chmod -R 775 $sharedPath/storage");
-    }
-    
-    info('Permissions and ownership set successfully');
 });
 
 desc('Reload PHP-FPM');
@@ -172,7 +126,6 @@ task('deploy:health_check', static function () {
 
 // Deployment hooks
 after('deploy:failed', 'deploy:unlock');
-after('deploy:writable', 'deploy:set_permissions');
 after('deploy:shared', 'deploy:optimize');
 after('deploy:symlink', 'php-fpm:reload');
 after('deploy:symlink', 'deploy:verify');
