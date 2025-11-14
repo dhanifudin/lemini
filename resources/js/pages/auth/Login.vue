@@ -11,6 +11,7 @@ import { register } from '@/routes';
 import { store } from '@/routes/login';
 import { request } from '@/routes/password';
 import { Form, Head } from '@inertiajs/vue3';
+import { useCsrfToken } from '@/composables/useCsrfToken';
 
 defineProps<{
     status?: string;
@@ -39,6 +40,8 @@ defineProps<{
             v-slot="{ errors, processing }"
             class="flex flex-col gap-6"
         >
+            <!-- CSRF token to prevent 419 errors -->
+            <input type="hidden" name="_token" :value="useCsrfToken().csrfToken" />
             <div class="grid gap-6">
                 <div class="grid gap-2">
                     <Label for="email">Email address</Label>
