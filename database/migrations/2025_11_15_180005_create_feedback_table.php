@@ -6,14 +6,11 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
         Schema::create('feedback', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('attempt_id')->constrained()->onDelete('cascade');
+            $table->foreignId('attempt_id')->constrained('attempts')->cascadeOnDelete();
             $table->json('ai_text')->nullable();
             $table->text('human_revision')->nullable();
             $table->string('status')->default('draft');
@@ -22,9 +19,6 @@ return new class extends Migration
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('feedback');

@@ -6,14 +6,12 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
         Schema::create('items', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('rubric_id')->nullable()->constrained()->onDelete('set null');
+            $table->foreignId('rubric_id')->nullable()->constrained('rubrics')->nullOnDelete();
+            $table->foreignId('learning_objective_id')->nullable()->constrained('learning_objectives')->nullOnDelete();
             $table->string('objective_code');
             $table->text('stem');
             $table->string('type');
@@ -21,13 +19,11 @@ return new class extends Migration
             $table->text('answer');
             $table->text('rationale')->nullable();
             $table->json('meta')->nullable();
+            $table->boolean('is_quiz_eligible')->default(false);
             $table->timestamps();
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('items');

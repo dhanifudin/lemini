@@ -6,28 +6,23 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
         Schema::create('quiz_session_items', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('quiz_session_id')->constrained()->cascadeOnDelete();
-            $table->foreignId('item_id')->constrained()->cascadeOnDelete();
-            $table->unsignedInteger('position');
+            $table->foreignId('quiz_session_id')->constrained('quiz_sessions')->cascadeOnDelete();
+            $table->foreignId('item_id')->constrained('items')->cascadeOnDelete();
+            $table->integer('position')->default(0);
             $table->json('response')->nullable();
-            $table->decimal('score', 5, 2)->nullable();
+            $table->float('score')->nullable();
             $table->string('status')->default('pending');
+            $table->json('feedback')->nullable();
+            $table->boolean('flagged')->default(false);
             $table->timestamps();
-
-            $table->unique(['quiz_session_id', 'position']);
+            $table->index(['quiz_session_id', 'item_id']);
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('quiz_session_items');

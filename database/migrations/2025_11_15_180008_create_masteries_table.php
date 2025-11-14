@@ -6,26 +6,20 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
         Schema::create('masteries', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained()->onDelete('cascade');
+            $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
             $table->string('objective_code');
-            $table->string('level');
-            $table->timestamp('last_seen_at');
+            $table->string('level')->nullable();
+            $table->float('score')->nullable();
+            $table->timestamp('last_seen_at')->nullable();
             $table->timestamps();
-
-            $table->unique(['user_id', 'objective_code']);
+            $table->index(['user_id', 'objective_code']);
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('masteries');
