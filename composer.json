@@ -1,8 +1,8 @@
 {
     "$schema": "https://getcomposer.org/schema.json",
-    "name": "laravel/vue-starter-kit",
+    "name": "dhanifudin/learning",
     "type": "project",
-    "description": "The skeleton application for the Laravel framework.",
+    "description": "The learning platform",
     "keywords": ["laravel", "framework"],
     "license": "MIT",
     "require": {
