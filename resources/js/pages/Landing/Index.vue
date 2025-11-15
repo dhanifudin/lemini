@@ -51,7 +51,7 @@ const displayStyle = computed(() => currentStyle.value || null);
 
 <template>
   <Head>
-    <title>Platform Pembelajaran Adaptif - Lemini</title>
+    <title>Platform Pembelajaran Adaptif - Learning X</title>
     <meta name="description" content="Platform pembelajaran yang menyesuaikan dengan gaya belajar Anda: visual, auditori, atau kinestetik." />
   </Head>
 
@@ -75,7 +75,7 @@ const displayStyle = computed(() => currentStyle.value || null);
               <div class="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-500 rounded-lg flex items-center justify-center">
                 <span class="text-white font-bold text-xl">L</span>
               </div>
-              <span class="text-xl font-bold text-gray-900">Lemini</span>
+              <span class="text-xl font-bold text-gray-900">Learning X</span>
             </div>
 
             <!-- Navigation Links -->
@@ -317,7 +317,7 @@ const displayStyle = computed(() => currentStyle.value || null);
                 <div class="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-500 rounded-lg flex items-center justify-center">
                   <span class="text-white font-bold text-xl">L</span>
                 </div>
-                <span class="text-xl font-bold text-white">Lemini</span>
+                <span class="text-xl font-bold text-white">Learning X</span>
               </div>
               <p class="text-gray-400 text-sm">
                 Platform pembelajaran adaptif yang menyesuaikan dengan gaya belajar Anda.
@@ -356,7 +356,7 @@ const displayStyle = computed(() => currentStyle.value || null);
           </div>
 
           <div class="border-t border-gray-800 mt-8 pt-8 text-sm text-center text-gray-400">
-            <p>&copy; 2025 Lemini. All rights reserved.</p>
+            <p>&copy; 2025 Learning X. All rights reserved.</p>
           </div>
         </div>
       </footer>
